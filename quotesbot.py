@@ -56,17 +56,27 @@ async def add(left : int, right : int):
     await bot.say(left + right)
 
 @bot.command()
-async def weather():
-    url = 'http://api.wunderground.com/api/-APIKEY-/geolookup/conditions/q/France/Paris.json'
+async def weather(country : str, city : str):
+    with open('weatherapi.txt', 'r') as weather_key:
+        api_key = weather_key.read()
+
+    url = 'http://api.wunderground.com/api/' + api_key + '/geolookup/conditions/q/' + country + '/' + city + '.json'
     f = urllib.request.urlopen(url)
     json_string = f.read()
     parsed_json = json.loads(json_string)
     location = parsed_json['location']['city']
-    temp_f = parsed_json['current_observation']['temp_f']
-    await bot.say('Current temperature in ' + location + 'is ' + temp_f)
+    temp_c = parsed_json['current_observation']['temp_c']
+    weather = parsed_json['current_observation']['weather']
+    await bot.say("Current temperature in " + location + " is " + str(temp_c) + "C and the condition is " + weather)
     f.close()
-#with open('token.txt', 'r') as bot_token:
-#    token = bot_token.read()
+
+@bot.command()
+async def predict(*args):
+    prediction = random.choice(args)
+    await bot.say(prediction)
+
+with open('token.txt', 'r') as bot_token:
+    token = bot_token.read()
 
 #client.run(token)
 
