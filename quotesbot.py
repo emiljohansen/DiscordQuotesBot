@@ -31,19 +31,23 @@ async def on_ready():
      print(bot.user.name)
      print(bot.user.id)
      print('----')
+     await bot.change_presence(game=discord.Game(name='Loading SkyNet'))
 
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
         return
 
-    await bot.process_commands(message)
-
     if message.content.startswith('!'):
         with open('quotes.txt', 'r') as quoted_text:
             for line in quoted_text:
                 if line.startswith(message.content):
                     await bot.send_message(message.channel, line.replace(message.content, ''))
+                    break
+
+    await bot.process_commands(message)
+
+     
 
 @bot.command()
 async def roll(minroll: int, maxroll: int):
@@ -75,12 +79,23 @@ async def predict(*args):
     prediction = random.choice(args)
     await bot.say(prediction)
 
+@bot.command()
+async def changegame(gamename : str):
+     await bot.change_presence(game=discord.Game(name=gamename))
+
+@bot.command()
+async def prizepool():
+     prizepool = list(range(15000000, 25000000))
+     prize_prediction = random.choice(prizepool)
+     await bot.say("The prizepool will be: " + str(prize_prediction))
+
 with open('token.txt', 'r') as bot_token:
     token = bot_token.read()
 
 #client.run(token)
 
 bot.run(token)
+
 
 
 
